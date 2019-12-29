@@ -59,21 +59,25 @@ export default class MinecraftPingBot {
 						MinecraftPingBot.INSTANCE._requestCount[msg.author.id]++;
 
 						msg.reply("Pinging " + serverHost + (serverPort != 25565 ? ":" + serverPort : ""));
+						try {
+							mcping.ping_fe01fa({host:serverHost, port:serverPort}, function(err, response) {
+								if(err) {
+									msg.reply("Could not reach " + serverHost + (serverPort != 25565 ? ":" + serverPort : ""));
+									return;
+								}
 
-						mcping.ping_fe01fa({host:serverHost, port:serverPort}, function(err, response) {
-							if(err) {
-								msg.reply("Could not reach " + serverHost + (serverPort != 25565 ? ":" + serverPort : ""));
-							}
+								let text: string = "";
 
-							let text: string = "";
-
-							text += "\n" + serverHost + (serverPort != 25565 ? ":" + serverPort : "") + " is online"
-							text += "\nVersion: " + response.gameVersion;
-							text += "\nPlayers online: " + response.playersOnline + "/" + response.maxPlayers;
-							text += "\nMOTD: " + response.motd;
-							
-							msg.reply(text);
-						});
+								text += "\n" + serverHost + (serverPort != 25565 ? ":" + serverPort : "") + " is online"
+								text += "\nVersion: " + response.gameVersion;
+								text += "\nPlayers online: " + response.playersOnline + "/" + response.maxPlayers;
+								text += "\nMOTD: " + response.motd;
+								
+								msg.reply(text);
+							});
+						} catch(err) {
+							msg.reply("An error occurred! please try again later");
+						}
 					} else {
 						MinecraftPingBot.INSTANCE._sendUseage(msg);
 					}
